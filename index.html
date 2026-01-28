@@ -217,6 +217,13 @@
       transform: translateY(0);
     }
 
+    #main-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
     .tools {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -224,6 +231,7 @@
       margin-top: 30px;
       width: 100%;
       max-width: 700px;
+      margin-bottom: 30px;
     }
 
     .tool-button {
@@ -758,7 +766,7 @@
       </div>
 
       <div class="card"
-        style="margin-top: 30px; text-align: center; background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8)); border: 1px solid rgba(99, 102, 241, 0.2); padding: 25px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        style="margin-top: 30px; text-align: center; background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8)); border: 1px solid rgba(99, 102, 241, 0.2); padding: 25px;">
         <div
           style="margin-bottom: 12px; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 700; font-size: 1.2rem; letter-spacing: 1px;">
           Made by Org_Lemah</div>
@@ -1291,11 +1299,30 @@
     }
 
     function generateCardNumber(bin) {
+      // Detect card type based on BIN
+      const binStr = bin.toString();
+      let targetLength;
+
+      // American Express: starts with 34 or 37 (15 digits)
+      if (binStr.startsWith('34') || binStr.startsWith('37')) {
+        targetLength = 15;
+      }
+      // Diners Club: starts with 36, 38, or 30 (14 digits)
+      else if (binStr.startsWith('36') || binStr.startsWith('38') || binStr.startsWith('30')) {
+        targetLength = 14;
+      }
+      // Visa, Mastercard, Discover: 16 digits
+      else {
+        targetLength = 16;
+      }
+
       let cardNumber = bin;
-      while (cardNumber.length < 15) {
+      // Generate random digits up to (targetLength - 1) to leave room for check digit
+      while (cardNumber.length < targetLength - 1) {
         cardNumber += Math.floor(Math.random() * 10);
       }
 
+      // Calculate Luhn check digit
       let sum = 0;
       let isEven = false;
       for (let i = cardNumber.length - 1; i >= 0; i--) {
