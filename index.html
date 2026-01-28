@@ -847,7 +847,7 @@
         </div>
         <div>
           <label>CVV:</label>
-          <input type="number" id="gen-cvv" placeholder="Leave blank to randomize" min="100" max="999">
+          <input type="number" id="gen-cvv" placeholder="Leave blank to randomize (3 or 4 digits)" min="100" max="9999">
         </div>
       </div>
 
@@ -917,7 +917,8 @@
         </div>
         <div>
           <label>CVV:</label>
-          <input type="number" id="multi-gen-cvv" placeholder="Leave blank to randomize" min="100" max="999">
+          <input type="number" id="multi-gen-cvv" placeholder="Leave blank to randomize (3 or 4 digits)" min="100"
+            max="9999">
         </div>
       </div>
 
@@ -1284,11 +1285,25 @@
           }
           const validYear = String(year).padStart(2, '0');
 
-          // CVV
-          const validCvv = cvv ? parseInt(cvv) : Math.floor(Math.random() * 900) + 100;
+          // CVV - Amex uses 4 digits, others use 3 digits
+          let validCvv;
+          const isAmex = cardNumber.startsWith('34') || cardNumber.startsWith('37');
+
+          if (cvv) {
+            validCvv = parseInt(cvv);
+          } else {
+            if (isAmex) {
+              // Amex: 4 digit CVV (1000-9999)
+              validCvv = Math.floor(Math.random() * 9000) + 1000;
+            } else {
+              // Others: 3 digit CVV (100-999)
+              validCvv = Math.floor(Math.random() * 900) + 100;
+            }
+          }
 
           // Output format: cardnum|month|year|cvv
-          cards.push(`${cardNumber}|${validMonth}|${validYear}|${String(validCvv).padStart(3, '0')}`);
+          const cvvPadding = isAmex ? 4 : 3;
+          cards.push(`${cardNumber}|${validMonth}|${validYear}|${String(validCvv).padStart(cvvPadding, '0')}`);
         }
 
         const spinner = document.getElementById('generator-spinner');
@@ -1420,11 +1435,25 @@
             }
             const validYear = String(year).padStart(2, '0');
 
-            // CVV
-            const validCvv = cvv ? parseInt(cvv) : Math.floor(Math.random() * 900) + 100;
+            // CVV - Amex uses 4 digits, others use 3 digits
+            let validCvv;
+            const isAmex = cardNumber.startsWith('34') || cardNumber.startsWith('37');
+
+            if (cvv) {
+              validCvv = parseInt(cvv);
+            } else {
+              if (isAmex) {
+                // Amex: 4 digit CVV (1000-9999)
+                validCvv = Math.floor(Math.random() * 9000) + 1000;
+              } else {
+                // Others: 3 digit CVV (100-999)
+                validCvv = Math.floor(Math.random() * 900) + 100;
+              }
+            }
 
             // Output format: cardnum|month|year|cvv
-            allCards.push(`${cardNumber}|${validMonth}|${validYear}|${String(validCvv).padStart(3, '0')}`);
+            const cvvPadding = isAmex ? 4 : 3;
+            allCards.push(`${cardNumber}|${validMonth}|${validYear}|${String(validCvv).padStart(cvvPadding, '0')}`);
           }
         });
 
